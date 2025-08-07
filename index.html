@@ -799,6 +799,8 @@
         const startBtn = document.getElementById('start-scan-btn');
         const stopBtn = document.getElementById('stop-scan-btn');
         const scannerStatus = document.getElementById('scanner-status');
+        
+        Tone.start(); // Initialize audio context on user interaction.
 
         stopScanner(); // Hentikan scanner jika sedang berjalan
 
@@ -900,6 +902,7 @@
         scannerStatus.textContent = `Berhasil: ${siswa.nama} (${siswa.kelas}) telah diabsen.`;
         scannerStatus.className = 'mt-4 text-center font-bold text-green-600 p-3 bg-green-100 rounded-lg';
         addScanLog('Berhasil', `${siswa.nama} (${siswa.kelas})`, 'success');
+        playSound('success');
         updateDashboardStats();
     };
 
