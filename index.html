@@ -38,7 +38,7 @@
             <div class="flex justify-center mb-6">
                  <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-indigo-600"><path d="M3 3h18v18H3zM9 9h6v6H9z"/><path d="M3 9h2M3 15h2M19 9h2M19 15h2M9 3v2M15 3v2M9 19v2M15 19v2"/></svg>
             </div>
-            <h2 class="text-2xl font-bold text-center mb-2">Aplikasi Absensi Siswa QRCode</h2>
+            <h2 class="text-2xl font-bold text-center mb-2">Aplikasi Absensi Siswa QR Code</h2>
             <p class="text-center text-gray-500 mb-6">Silakan masuk untuk melanjutkan.</p>
             <form id="loginForm">
                 <div class="mb-4">
@@ -139,6 +139,11 @@
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div class="bg-white p-6 rounded-xl shadow-md">
                             <h2 class="text-xl font-bold mb-4">Pindai Kode QR Siswa</h2>
+                            <div class="flex flex-col sm:flex-row items-center gap-4 mb-4 bg-gray-50 p-3 rounded-lg">
+                                <select id="camera-select" class="w-full sm:w-auto flex-grow p-2 border rounded-lg"></select>
+                                <button id="start-scan-btn" class="w-full sm:w-auto bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-600">Mulai Pindai</button>
+                                <button id="stop-scan-btn" class="w-full sm:w-auto bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600" disabled>Stop Pindai</button>
+                            </div>
                             <div id="qr-reader" class="w-full"></div>
                             <div id="scanner-status" class="mt-4 text-center font-medium"></div>
                         </div>
@@ -468,8 +473,11 @@
             activeLink.classList.remove('bg-white', 'text-gray-700');
         }
 
-        if (pageId === 'scanner') startScanner();
-        else stopScanner();
+        if (pageId === 'scanner') {
+            initializeScannerPage();
+        } else {
+            stopScanner();
+        }
 
         if (pageId === 'dashboard') updateDashboardStats();
         if (pageId === 'laporan') {
@@ -680,10 +688,44 @@
     };
 
     // --- SCANNER ---
-    const startScanner = () => {
+    const initializeScannerPage = () => {
+        const cameraSelect = document.getElementById('camera-select');
+        const startBtn = document.getElementById('start-scan-btn');
+        const stopBtn = document.getElementById('stop-scan-btn');
         const scannerStatus = document.getElementById('scanner-status');
-        if (!html5QrCode) html5QrCode = new Html5Qrcode("qr-reader");
-        
+
+        html5QrCode = new Html5Qrcode("qr-reader");
+
+        Html5Qrcode.getCameras().then(devices => {
+            if (devices && devices.length) {
+                cameraSelect.innerHTML = '';
+                devices.forEach(device => {
+                    const option = document.createElement('option');
+                    option.value = device.id;
+                    option.innerHTML = device.label;
+                    cameraSelect.appendChild(option);
+                });
+            }
+        }).catch(err => {
+            scannerStatus.textContent = "Tidak dapat mengakses kamera.";
+        });
+
+        startBtn.addEventListener('click', () => {
+            startScanner(cameraSelect.value);
+        });
+
+        stopBtn.addEventListener('click', () => {
+            stopScanner();
+        });
+    };
+
+    const startScanner = (deviceId) => {
+        const startBtn = document.getElementById('start-scan-btn');
+        const stopBtn = document.getElementById('stop-scan-btn');
+        const scannerStatus = document.getElementById('scanner-status');
+
+        stopScanner(); // Hentikan scanner jika sedang berjalan
+
         const qrCodeSuccessCallback = (decodedText, decodedResult) => {
             handleScan(decodedText);
             if (html5QrCode && html5QrCode.isScanning) {
@@ -697,19 +739,37 @@
         };
 
         const config = { fps: 10, qrbox: { width: 250, height: 250 } };
-
-        if (!html5QrCode.isScanning) {
-            html5QrCode.start({ facingMode: "environment" }, config, qrCodeSuccessCallback)
-                .catch(err => {
-                    scannerStatus.textContent = "Gagal memulai kamera. Pastikan Anda memberikan izin.";
-                    scannerStatus.className = "mt-4 text-center font-medium text-red-600";
-                });
-        }
+        
+        html5QrCode.start(deviceId, config, qrCodeSuccessCallback)
+            .then(() => {
+                startBtn.disabled = true;
+                stopBtn.disabled = false;
+                scannerStatus.textContent = "Arahkan kamera ke Kode QR";
+                scannerStatus.className = "mt-4 text-center font-medium text-gray-600";
+            })
+            .catch(err => {
+                scannerStatus.textContent = "Gagal memulai kamera. Pastikan Anda memberikan izin.";
+                scannerStatus.className = "mt-4 text-center font-medium text-red-600";
+            });
     };
 
     const stopScanner = () => {
+        const startBtn = document.getElementById('start-scan-btn');
+        const stopBtn = document.getElementById('stop-scan-btn');
+        const scannerStatus = document.getElementById('scanner-status');
+
         if (html5QrCode && html5QrCode.isScanning) {
-            html5QrCode.stop().catch(err => console.error("Gagal menghentikan scanner.", err));
+            html5QrCode.stop()
+                .then(() => {
+                    startBtn.disabled = false;
+                    stopBtn.disabled = true;
+                    scannerStatus.textContent = "Pindai dihentikan.";
+                    scannerStatus.className = "mt-4 text-center font-medium text-gray-500";
+                })
+                .catch(err => console.error("Gagal menghentikan scanner.", err));
+        } else {
+            startBtn.disabled = false;
+            stopBtn.disabled = true;
         }
     };
 
