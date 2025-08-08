@@ -801,6 +801,8 @@
         stopBtn.addEventListener('click', () => {
             stopScanner();
         });
+        
+        renderBelumAbsenList();
     };
 
     const startScanner = (deviceId) => {
@@ -912,6 +914,7 @@
         addScanLog('Berhasil', `${siswa.nama} (${siswa.kelas})`, 'success');
         playSound('success');
         updateDashboardStats();
+        renderBelumAbsenList(); // Update the list of absent students
     };
 
     const addScanLog = (status, message, type) => {
@@ -930,6 +933,58 @@
         `;
         logContainer.innerHTML = logEntry + logContainer.innerHTML;
     };
+    
+    const renderBelumAbsenList = () => {
+        const listContainer = document.getElementById('belum-absen-list');
+        const today = getTodayDateString();
+        listContainer.innerHTML = '';
+
+        const siswaAbsenHariIni = new Set(state.absensi.filter(a => a.tanggal === today).map(a => a.nis));
+        const siswaBelumAbsen = state.siswa.filter(s => !siswaAbsenHariIni.has(s.nis));
+
+        if (siswaBelumAbsen.length === 0) {
+            listContainer.innerHTML = `<p class="text-gray-500 text-center p-4">Semua siswa sudah absen hari ini.</p>`;
+            return;
+        }
+
+        siswaBelumAbsen.forEach(siswa => {
+            const row = `
+                <div class="flex justify-between items-center p-2 border-b">
+                    <div>
+                        <p class="font-medium text-sm">${siswa.nama}</p>
+                        <p class="text-xs text-gray-500">${siswa.kelas}</p>
+                    </div>
+                    <div class="flex gap-1">
+                        <button onclick="markManualAttendanceFromScanner('${siswa.nis}', 'S')" class="bg-blue-500 text-white text-xs font-bold w-6 h-6 rounded-full hover:bg-blue-600">S</button>
+                        <button onclick="markManualAttendanceFromScanner('${siswa.nis}', 'I')" class="bg-yellow-500 text-white text-xs font-bold w-6 h-6 rounded-full hover:bg-yellow-600">I</button>
+                        <button onclick="markManualAttendanceFromScanner('${siswa.nis}', 'A')" class="bg-red-500 text-white text-xs font-bold w-6 h-6 rounded-full hover:bg-red-600">A</button>
+                    </div>
+                </div>
+            `;
+            listContainer.innerHTML += row;
+        });
+    };
+
+    const markManualAttendanceFromScanner = (nis, status) => {
+        const today = getTodayDateString();
+        const siswa = state.siswa.find(s => s.nis === nis);
+        
+        const newAbsen = {
+            id: Date.now(),
+            nis: siswa.nis,
+            nama: siswa.nama,
+            kelas: siswa.kelas,
+            tanggal: today,
+            waktu: null, // Manual entry has no specific time
+            status: status 
+        };
+        state.absensi.push(newAbsen);
+        saveState();
+        
+        addScanLog('Manual', `${siswa.nama} ditandai ${status}`, 'info');
+        renderBelumAbsenList(); // Re-render the list
+    };
+
 
     // --- LAPORAN ---
     const renderManualAttendance = () => {
