@@ -30,6 +30,19 @@
         #qr-reader-region {
             border: none !important;
         }
+        #preview-content table {
+            border-collapse: collapse;
+            width: 100%;
+            font-size: 8px;
+        }
+        #preview-content th, #preview-content td {
+            border: 1px solid #ccc;
+            padding: 4px;
+            text-align: center;
+        }
+        #preview-content th {
+            background-color: #f2f2f2;
+        }
     </style>
 </head>
 <body class="bg-gray-100 text-gray-800">
@@ -219,6 +232,9 @@
                                     <button id="export-xlsx" class="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition disabled:bg-gray-400 w-full" disabled>
                                         Unduh XLSX
                                     </button>
+                                    <button id="preview-pdf" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition disabled:bg-gray-400 w-full" disabled>
+                                        Preview PDF
+                                    </button>
                                     <button id="export-pdf" class="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition disabled:bg-gray-400 w-full" disabled>
                                         Unduh PDF
                                     </button>
@@ -389,6 +405,19 @@
             <div class="flex justify-center gap-4 mt-6">
                 <button type="button" onclick="closeModal('qrModal')" class="bg-gray-300 text-gray-800 px-4 py-2 rounded-lg hover:bg-gray-400">Tutup</button>
                 <button type="button" onclick="downloadQR()" class="bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-600">Unduh JPEG</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Preview Modal -->
+    <div id="previewModal" class="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-start hidden z-50 overflow-y-auto py-10">
+        <div class="bg-white p-8 rounded-xl shadow-lg w-full max-w-6xl">
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="text-xl font-bold">Pratinjau Laporan PDF</h3>
+                <button type="button" onclick="closeModal('previewModal')" class="bg-gray-300 text-gray-800 px-4 py-2 rounded-lg hover:bg-gray-400">Tutup</button>
+            </div>
+            <div id="preview-content" class="p-4 border rounded-lg">
+                <!-- Konten preview akan dimuat di sini -->
             </div>
         </div>
     </div>
@@ -1322,6 +1351,77 @@
         const fileName = `laporan_absensi_${yearMonth}.pdf`;
         doc.save(fileName);
     };
+    
+    const previewPDF = () => {
+        const yearMonth = document.getElementById('filter-bulan').value;
+        if (!yearMonth) {
+            alert("Silakan pilih bulan dan tahun terlebih dahulu.");
+            return;
+        }
+
+        const { headers, reportRows } = generateMonthlyReportData(yearMonth);
+        const monthName = new Date(yearMonth + '-02').toLocaleString('id-ID', { month: 'long', year: 'numeric' });
+        const city = document.getElementById('laporan-kota').value || ".........................";
+        const printDateValue = document.getElementById('laporan-tanggal-cetak').value;
+        const printDate = printDateValue
+            ? new Date(printDateValue + 'T00:00:00').toLocaleDateString('id-ID', {day: 'numeric', month: 'long', year: 'numeric'})
+            : new Date().toLocaleDateString('id-ID', {day: 'numeric', month: 'long', year: 'numeric'});
+
+        let tableHTML = `
+            <div class="text-center mb-4">
+                <h2 class="text-xl font-bold">${state.pengaturan.namaSekolah || "Nama Sekolah"}</h2>
+                <p>Laporan Kehadiran Bulan ${monthName}</p>
+            </div>
+            <table>
+                <thead>
+                    <tr>${headers.map(h => `<th>${h}</th>`).join('')}</tr>
+                </thead>
+                <tbody>
+        `;
+
+        reportRows.forEach(row => {
+            tableHTML += '<tr>';
+            headers.forEach((header, index) => {
+                let cellContent = row[header];
+                let bgColor = '';
+                if (index > 2 && index < headers.length - 5) {
+                    switch(cellContent) {
+                        case 'S': bgColor = 'style="background-color: #D1FAE5;"'; break;
+                        case 'I': bgColor = 'style="background-color: #DBEAFE;"'; break;
+                        case 'A': bgColor = 'style="background-color: #FEE2E2;"'; break;
+                        case '': bgColor = 'style="background-color: #E5E7EB;"'; break;
+                    }
+                }
+                tableHTML += `<td ${bgColor}>${cellContent}</td>`;
+            });
+            tableHTML += '</tr>';
+        });
+
+        tableHTML += `
+                </tbody>
+            </table>
+            <div class="flex justify-between mt-8 text-sm" style="page-break-inside: avoid;">
+                <div class="text-center">
+                    <p>Mengetahui,</p>
+                    <p>Kepala Sekolah</p>
+                    <br><br><br>
+                    <p class="font-bold">${state.pengaturan.namaKepsek || '(.........................)'}</p>
+                    <p>NIP. ${state.pengaturan.nipKepsek || '.........................'}</p>
+                </div>
+                <div class="text-center">
+                    <p>${city}, ${printDate}</p>
+                    <p>Wali Kelas / Guru</p>
+                    <br><br><br>
+                    <p class="font-bold">${state.pengaturan.namaWali || '(.........................)'}</p>
+                    <p>NIP. ${state.pengaturan.nipWali || '.........................'}</p>
+                </div>
+            </div>
+        `;
+
+        document.getElementById('preview-content').innerHTML = tableHTML;
+        openModal('previewModal');
+    };
+
 
     // --- PENGATURAN ---
     const renderPengaturan = () => {
@@ -1400,10 +1500,12 @@
         
         // Laporan listeners
         document.getElementById('export-xlsx').addEventListener('click', exportXLSX);
+        document.getElementById('preview-pdf').addEventListener('click', previewPDF);
         document.getElementById('export-pdf').addEventListener('click', exportPDF);
         document.getElementById('filter-bulan').addEventListener('change', (e) => {
             const hasValue = !!e.target.value;
             document.getElementById('export-xlsx').disabled = !hasValue;
+            document.getElementById('preview-pdf').disabled = !hasValue;
             document.getElementById('export-pdf').disabled = !hasValue;
             renderHolidayCalendar();
         });
