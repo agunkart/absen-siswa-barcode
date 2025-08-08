@@ -30,19 +30,6 @@
         #qr-reader-region {
             border: none !important;
         }
-        #preview-content table {
-            border-collapse: collapse;
-            width: 100%;
-            font-size: 8px;
-        }
-        #preview-content th, #preview-content td {
-            border: 1px solid #ccc;
-            padding: 4px;
-            text-align: center;
-        }
-        #preview-content th {
-            background-color: #f2f2f2;
-        }
     </style>
 </head>
 <body class="bg-gray-100 text-gray-800">
@@ -89,6 +76,7 @@
                     <button onclick="showPage('scanner')" class="nav-link bg-white text-gray-700 px-4 py-2 rounded-lg shadow-sm hover:bg-gray-200 transition">Pindai Absen</button>
                     <button onclick="showPage('laporan')" class="nav-link bg-white text-gray-700 px-4 py-2 rounded-lg shadow-sm hover:bg-gray-200 transition">Laporan</button>
                     <button onclick="showPage('pengaturan')" class="nav-link bg-white text-gray-700 px-4 py-2 rounded-lg shadow-sm hover:bg-gray-200 transition">Pengaturan</button>
+                    <button onclick="showPage('info')" class="nav-link bg-white text-gray-700 px-4 py-2 rounded-lg shadow-sm hover:bg-gray-200 transition">Info</button>
                     <button onclick="handleLogout()" class="bg-red-500 text-white px-4 py-2 rounded-lg shadow-sm hover:bg-red-600 transition ml-4">Logout</button>
                 </nav>
             </header>
@@ -228,14 +216,14 @@
                                         </div>
                                     </div>
                                 </div>
-                                <div class="flex gap-4">
-                                    <button id="export-xlsx" class="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition disabled:bg-gray-400 w-full" disabled>
+                                <div class="flex flex-wrap gap-4">
+                                    <button id="export-xlsx" class="flex-1 bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition disabled:bg-gray-400" disabled>
                                         Unduh XLSX
                                     </button>
-                                    <button id="preview-pdf" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition disabled:bg-gray-400 w-full" disabled>
+                                     <button id="preview-pdf" class="flex-1 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition disabled:bg-gray-400" disabled>
                                         Preview PDF
                                     </button>
-                                    <button id="export-pdf" class="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition disabled:bg-gray-400 w-full" disabled>
+                                    <button id="export-pdf" class="flex-1 bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition disabled:bg-gray-400" disabled>
                                         Unduh PDF
                                     </button>
                                 </div>
@@ -321,6 +309,58 @@
                         </div>
                     </div>
                 </div>
+                
+                <!-- Info Page -->
+                <div id="info" class="page">
+                    <div class="bg-white p-6 rounded-xl shadow-md max-w-4xl mx-auto">
+                        <h2 class="text-2xl font-bold mb-6 text-center text-gray-800">Informasi Aplikasi</h2>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                            <!-- Profil Pengembang -->
+                            <div class="p-6 border rounded-lg bg-gray-50">
+                                <h3 class="text-xl font-semibold mb-4 text-indigo-600">Profil Pengembang</h3>
+                                <div class="space-y-3 text-gray-700">
+                                    <p><strong>Nama:</strong><br>Agung Kurniawan, S.Pd.</p>
+                                    <p><strong>Alamat:</strong><br>Kabupaten Tegal - Jawa Tengah</p>
+                                    <p><strong>Unit Kerja:</strong><br>SDN 01 Warungpring - Kab. Pemalang - Jawa Tengah</p>
+                                </div>
+                            </div>
+
+                            <!-- Saran & Bantuan -->
+                            <div class="p-6 border rounded-lg bg-gray-50">
+                                <h3 class="text-xl font-semibold mb-4 text-indigo-600">Saran & Bantuan Teknis</h3>
+                                <div class="space-y-3">
+                                    <a href="https://web.facebook.com/agungkurniawan88" target="_blank" class="flex items-center gap-3 text-blue-700 hover:underline">
+                                        <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M22 12c0-5.523-4.477-10-10-10S2 6.477 2 12c0 4.991 3.657 9.128 8.438 9.878v-6.987h-2.54V12h2.54V9.797c0-2.506 1.492-3.89 3.777-3.89 1.094 0 2.238.195 2.238.195v2.46h-1.26c-1.243 0-1.63.771-1.63 1.562V12h2.773l-.443 2.89h-2.33v6.988C18.343 21.128 22 16.991 22 12z"/></svg>
+                                        <span>agungkurniawan88</span>
+                                    </a>
+                                    <a href="https://www.instagram.com/agunk_art88" target="_blank" class="flex items-center gap-3 text-pink-600 hover:underline">
+                                        <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.85s-.011 3.585-.069 4.85c-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07s-3.585-.012-4.85-.07c-3.252-.148-4.771-1.691-4.919-4.919-.058-1.265-.069-1.645-.069-4.85s.011-3.585.069-4.85c.149-3.225 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.85-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948s.014 3.667.072 4.947c.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072s3.667-.014 4.947-.072c4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.947s-.014-3.667-.072-4.947c-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.689-.073-4.948-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.162 6.162 6.162 6.162-2.759 6.162-6.162-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4s1.791-4 4-4 4 1.79 4 4-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
+                                        <span>agunk_art88</span>
+                                    </a>
+                                    <a href="https://www.tiktok.com/@agunkart" target="_blank" class="flex items-center gap-3 text-black hover:underline">
+                                        <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M12.525.02c1.31-.02 2.61-.01 3.91-.02.08 1.53.63 3.09 1.75 4.17 1.12 1.11 2.7 1.62 4.24 1.79v4.03c-1.44-.05-2.89-.35-4.2-.97-.57-.26-1.1-.59-1.62-.93-.01 2.92.01 5.84-.02 8.75-.08 1.4-.54 2.79-1.35 3.94-1.31 1.92-3.58 3.17-5.91 3.21-2.43.05-4.86-.95-6.69-2.81-1.77-1.74-2.68-4.16-2.61-6.65.07-2.36 1.02-4.58 2.49-6.31 1.31-1.56 3.12-2.52 5.04-2.82.03-.01.06-.01.09-.01z"/></svg>
+                                        <span>@agunkart</span>
+                                    </a>
+                                     <a href="https://s.id/agunk-aplikasi" target="_blank" class="flex items-center gap-3 text-gray-800 hover:underline">
+                                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.536a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"></path></svg>
+                                        <span>Lihat Aplikasi Lainnya</span>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Donasi -->
+                        <div class="mt-8 p-6 border rounded-lg bg-gray-50 text-center">
+                            <h3 class="text-xl font-semibold mb-4 text-indigo-600">Donasi untuk Pengembang</h3>
+                            <p class="text-gray-700 mb-4">Jika aplikasi ini bermanfaat, Anda dapat memberikan dukungan kepada pengembang melalui donasi ke rekening di bawah ini.</p>
+                            <div class="bg-blue-100 border border-blue-200 p-4 rounded-lg inline-block">
+                                <p class="font-sans"><strong>BCA</strong></p>
+                                <p class="text-2xl font-mono tracking-widest">3620450331</p>
+                                <p class="font-sans">a.n. Agung Kurniawan</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
             </main>
         </div>
     </div>
