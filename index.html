@@ -30,12 +30,25 @@
         #qr-reader-region {
             border: none !important;
         }
+        #preview-content table {
+            border-collapse: collapse;
+            width: 100%;
+            font-size: 8px;
+        }
+        #preview-content th, #preview-content td {
+            border: 1px solid #ccc;
+            padding: 4px;
+            text-align: center;
+        }
+        #preview-content th {
+            background-color: #f2f2f2;
+        }
     </style>
 </head>
 <body class="bg-gray-100 text-gray-800">
 
     <!-- Login Screen -->
-    <div id="login-screen" class="min-h-screen flex items-center justify-center bg-gray-200">
+    <div id="login-screen" class="min-h-screen flex items-center justify-center bg-gray-200 p-4">
         <div class="bg-white p-8 rounded-xl shadow-lg w-full max-w-sm">
             <div class="flex justify-center mb-6">
                  <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-indigo-600"><path d="M3 3h18v18H3zM9 9h6v6H9z"/><path d="M3 9h2M3 15h2M19 9h2M19 15h2M9 3v2M15 3v2M9 19v2M15 19v2"/></svg>
@@ -54,7 +67,11 @@
                 <p id="login-error" class="text-red-500 text-sm text-center mb-4 hidden"></p>
                 <button type="submit" class="w-full bg-indigo-600 text-white py-2 rounded-lg hover:bg-indigo-700 transition">Login</button>
             </form>
-            <p class="text-center text-xs text-gray-400 mt-8">
+            <a href="https://chat.whatsapp.com/LvzbnBgTffKCGUIStyayh5?mode=ac_t" target="_blank" class="mt-6 text-center text-sm text-green-600 hover:underline flex items-center justify-center gap-2">
+                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.886-.001 2.269.655 4.512 1.924 6.344l-1.651 6.066 6.176-1.645z"/></svg>
+                <span>Gabung Grup WA untuk Konsultasi</span>
+            </a>
+            <p class="text-center text-xs text-gray-400 mt-2">
                 Pengembang: Agung Kurniawan, S.Pd.
             </p>
         </div>
@@ -65,12 +82,13 @@
         <!-- Main Container -->
         <div class="container mx-auto p-4 md:p-6 max-w-7xl">
             <!-- Header -->
-            <header class="bg-white shadow-md rounded-xl p-4 mb-6 flex flex-col md:flex-row justify-between items-center">
-                <div class="flex items-center space-x-3 mb-4 md:mb-0">
+            <header class="bg-white shadow-md rounded-xl p-4 mb-6 flex justify-between items-center">
+                <div class="flex items-center space-x-3">
                     <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-indigo-600"><path d="M3 3h18v18H3zM9 9h6v6H9z"/><path d="M3 9h2M3 15h2M19 9h2M19 15h2M9 3v2M15 3v2M9 19v2M15 19v2"/></svg>
-                    <h1 class="text-2xl font-bold text-gray-800">Absensi Siswa QR</h1>
+                    <h1 class="text-xl md:text-2xl font-bold text-gray-800">Absensi Siswa QR</h1>
                 </div>
-                <nav class="flex flex-wrap justify-center items-center gap-2">
+                <!-- Desktop Navigation -->
+                <nav class="hidden md:flex flex-wrap justify-center items-center gap-2">
                     <button onclick="showPage('dashboard')" class="nav-link bg-indigo-600 text-white px-4 py-2 rounded-lg shadow-sm hover:bg-indigo-700 transition">Dashboard</button>
                     <button onclick="showPage('siswa')" class="nav-link bg-white text-gray-700 px-4 py-2 rounded-lg shadow-sm hover:bg-gray-200 transition">Siswa</button>
                     <button onclick="showPage('scanner')" class="nav-link bg-white text-gray-700 px-4 py-2 rounded-lg shadow-sm hover:bg-gray-200 transition">Pindai Absen</button>
@@ -79,7 +97,27 @@
                     <button onclick="showPage('info')" class="nav-link bg-white text-gray-700 px-4 py-2 rounded-lg shadow-sm hover:bg-gray-200 transition">Info</button>
                     <button onclick="handleLogout()" class="bg-red-500 text-white px-4 py-2 rounded-lg shadow-sm hover:bg-red-600 transition ml-4">Logout</button>
                 </nav>
+                <!-- Mobile Menu Button -->
+                <div class="md:hidden">
+                    <button id="mobile-menu-button" class="text-gray-600 hover:text-indigo-600">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path></svg>
+                    </button>
+                </div>
             </header>
+            <!-- Mobile Navigation -->
+            <div id="mobile-menu" class="hidden md:hidden bg-white rounded-xl shadow-md mb-6 p-4">
+                <nav class="flex flex-col gap-2">
+                    <button onclick="showPage('dashboard')" class="nav-link w-full text-left p-2 rounded-lg hover:bg-gray-100">Dashboard</button>
+                    <button onclick="showPage('siswa')" class="nav-link w-full text-left p-2 rounded-lg hover:bg-gray-100">Siswa</button>
+                    <button onclick="showPage('scanner')" class="nav-link w-full text-left p-2 rounded-lg hover:bg-gray-100">Pindai Absen</button>
+                    <button onclick="showPage('laporan')" class="nav-link w-full text-left p-2 rounded-lg hover:bg-gray-100">Laporan</button>
+                    <button onclick="showPage('pengaturan')" class="nav-link w-full text-left p-2 rounded-lg hover:bg-gray-100">Pengaturan</button>
+                    <button onclick="showPage('info')" class="nav-link w-full text-left p-2 rounded-lg hover:bg-gray-100">Info</button>
+                    <hr class="my-2">
+                    <button onclick="handleLogout()" class="w-full bg-red-500 text-white px-4 py-2 rounded-lg shadow-sm hover:bg-red-600 transition">Logout</button>
+                </nav>
+            </div>
+
 
             <!-- Main Content -->
             <main>
@@ -216,7 +254,7 @@
                                         </div>
                                     </div>
                                 </div>
-                                <div class="flex flex-wrap gap-4">
+                                <div class="flex flex-col sm:flex-row gap-4">
                                     <button id="export-xlsx" class="flex-1 bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition disabled:bg-gray-400" disabled>
                                         Unduh XLSX
                                     </button>
@@ -331,15 +369,19 @@
                                 <div class="space-y-3">
                                     <a href="https://web.facebook.com/agungkurniawan88" target="_blank" class="flex items-center gap-3 text-blue-700 hover:underline">
                                         <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M22 12c0-5.523-4.477-10-10-10S2 6.477 2 12c0 4.991 3.657 9.128 8.438 9.878v-6.987h-2.54V12h2.54V9.797c0-2.506 1.492-3.89 3.777-3.89 1.094 0 2.238.195 2.238.195v2.46h-1.26c-1.243 0-1.63.771-1.63 1.562V12h2.773l-.443 2.89h-2.33v6.988C18.343 21.128 22 16.991 22 12z"/></svg>
-                                        <span>agungkurniawan88</span>
+                                        <span>Facebook</span>
                                     </a>
                                     <a href="https://www.instagram.com/agunk_art88" target="_blank" class="flex items-center gap-3 text-pink-600 hover:underline">
                                         <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.85s-.011 3.585-.069 4.85c-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07s-3.585-.012-4.85-.07c-3.252-.148-4.771-1.691-4.919-4.919-.058-1.265-.069-1.645-.069-4.85s.011-3.585.069-4.85c.149-3.225 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.85-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948s.014 3.667.072 4.947c.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072s3.667-.014 4.947-.072c4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.947s-.014-3.667-.072-4.947c-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.689-.073-4.948-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.162 6.162 6.162 6.162-2.759 6.162-6.162-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4s1.791-4 4-4 4 1.79 4 4-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
-                                        <span>agunk_art88</span>
+                                        <span>Instagram</span>
                                     </a>
                                     <a href="https://www.tiktok.com/@agunkart" target="_blank" class="flex items-center gap-3 text-black hover:underline">
                                         <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M12.525.02c1.31-.02 2.61-.01 3.91-.02.08 1.53.63 3.09 1.75 4.17 1.12 1.11 2.7 1.62 4.24 1.79v4.03c-1.44-.05-2.89-.35-4.2-.97-.57-.26-1.1-.59-1.62-.93-.01 2.92.01 5.84-.02 8.75-.08 1.4-.54 2.79-1.35 3.94-1.31 1.92-3.58 3.17-5.91 3.21-2.43.05-4.86-.95-6.69-2.81-1.77-1.74-2.68-4.16-2.61-6.65.07-2.36 1.02-4.58 2.49-6.31 1.31-1.56 3.12-2.52 5.04-2.82.03-.01.06-.01.09-.01z"/></svg>
-                                        <span>@agunkart</span>
+                                        <span>TikTok</span>
+                                    </a>
+                                    <a href="https://chat.whatsapp.com/LvzbnBgTffKCGUIStyayh5?mode=ac_t" target="_blank" class="flex items-center gap-3 text-green-600 hover:underline">
+                                        <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.886-.001 2.269.655 4.512 1.924 6.344l-1.651 6.066 6.176-1.645z"/></svg>
+                                        <span>Gabung Grup WA</span>
                                     </a>
                                      <a href="https://s.id/agunk-aplikasi" target="_blank" class="flex items-center gap-3 text-gray-800 hover:underline">
                                         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.536a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"></path></svg>
@@ -1560,6 +1602,10 @@
         document.getElementById('confirm-cancel-btn').addEventListener('click', () => {
             closeModal('confirmModal');
             confirmCallback = null;
+        });
+        
+        document.getElementById('mobile-menu-button').addEventListener('click', () => {
+            document.getElementById('mobile-menu').classList.toggle('hidden');
         });
     };
     
