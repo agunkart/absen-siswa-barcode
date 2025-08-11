@@ -67,6 +67,9 @@
                 <p id="login-error" class="text-red-500 text-sm text-center mb-4 hidden"></p>
                 <button type="submit" class="w-full bg-indigo-600 text-white py-2 rounded-lg hover:bg-indigo-700 transition">Login</button>
             </form>
+            <div class="text-center mt-4">
+                <button onclick="resetPassword()" class="text-sm text-gray-500 hover:text-indigo-600 hover:underline">Lupa Password?</button>
+            </div>
             <a href="https://chat.whatsapp.com/LvzbnBgTffKCGUIStyayh5?mode=ac_t" target="_blank" class="mt-6 text-center text-sm text-green-600 hover:underline flex items-center justify-center gap-2">
                 <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.886-.001 2.269.655 4.512 1.924 6.344l-1.651 6.066 6.176-1.645z"/></svg>
                 <span>Gabung Grup WA untuk Konsultasi</span>
@@ -498,7 +501,7 @@
                 <h3 class="text-xl font-bold">Pratinjau Laporan PDF</h3>
                 <button type="button" onclick="closeModal('previewModal')" class="bg-gray-300 text-gray-800 px-4 py-2 rounded-lg hover:bg-gray-400">Tutup</button>
             </div>
-            <div id="preview-content" class="p-4 border rounded-lg">
+            <div id="preview-content" class="p-4 border rounded-lg overflow-x-auto">
                 <!-- Konten preview akan dimuat di sini -->
             </div>
         </div>
@@ -1562,6 +1565,20 @@
         }
     };
 
+    const resetPassword = () => {
+        showConfirm(
+            'Apakah Anda yakin? Tindakan ini akan MENGHAPUS SEMUA DATA (siswa, absensi, pengaturan) dan mengembalikan login ke standar (admin/12345).', 
+            () => {
+                localStorage.removeItem('absen_siswa_data');
+                localStorage.removeItem('absen_absensi_data');
+                localStorage.removeItem('absen_pengaturan_data');
+                localStorage.removeItem('absen_manual_holidays');
+                alert('Aplikasi telah direset. Silakan muat ulang halaman dan login dengan username "admin" dan password "12345".');
+                window.location.reload();
+            }
+        );
+    };
+
     const handleLogout = () => {
         sessionStorage.removeItem('isLoggedIn');
         window.location.reload();
@@ -1592,17 +1609,6 @@
             renderHolidayCalendar();
         });
         document.getElementById('manual-date').addEventListener('change', renderManualAttendance);
-
-        document.getElementById('confirm-ok-btn').addEventListener('click', () => {
-            if (confirmCallback) confirmCallback();
-            closeModal('confirmModal');
-            confirmCallback = null;
-        });
-
-        document.getElementById('confirm-cancel-btn').addEventListener('click', () => {
-            closeModal('confirmModal');
-            confirmCallback = null;
-        });
         
         document.getElementById('mobile-menu-button').addEventListener('click', () => {
             document.getElementById('mobile-menu').classList.toggle('hidden');
@@ -1631,6 +1637,18 @@
             document.getElementById('login-screen').classList.remove('hidden');
             document.getElementById('app-screen').classList.add('hidden');
         }
+        
+        // Pindahkan listener modal konfirmasi ke sini agar selalu aktif
+        document.getElementById('confirm-ok-btn').addEventListener('click', () => {
+            if (confirmCallback) confirmCallback();
+            closeModal('confirmModal');
+            confirmCallback = null;
+        });
+
+        document.getElementById('confirm-cancel-btn').addEventListener('click', () => {
+            closeModal('confirmModal');
+            confirmCallback = null;
+        });
     });
 </script>
 
